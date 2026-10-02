@@ -7,7 +7,12 @@
   // Access configuration is set per installation after the first deploy.
   // Preserve those live bindings when this source config does not declare them.
   "keep_vars": true,
-  "observability": { "enabled": true },
+  "observability": {
+    "enabled": true,
+  },
+  "workers_dev": false,
+  "preview_urls": false,
+  "routes": [{ "pattern": "executor.amitav.dev", "custom_domain": true }],
   // The web UI (Workers Static Assets) — the shared multiplayer SPA built by
   // `vite build` into ./dist. `single-page-application` serves index.html for
   // client routes (e.g. /policies); `run_worker_first` forces the API, MCP, and
@@ -29,7 +34,7 @@
     {
       "binding": "DB",
       "database_name": "executor",
-      "database_id": "ae748ca1-032c-4427-a1a0-fe39db77d1a9",
+      "database_id": "c2d3c9ca-b152-4d72-97a9-575cc8d8200e",
     },
   ],
   // Plugin blob seam backend: multi-MB values (resolved OpenAPI specs,
@@ -57,13 +62,25 @@
   // is the free-tier-eligible SQLite-backed DO storage.
   "durable_objects": {
     "bindings": [
-      { "name": "MCP_SESSION", "class_name": "McpSessionDO" },
-      { "name": "MCP_EXECUTION_OWNER", "class_name": "McpExecutionOwnerDirectoryDO" },
+      {
+        "name": "MCP_SESSION",
+        "class_name": "McpSessionDO",
+      },
+      {
+        "name": "MCP_EXECUTION_OWNER",
+        "class_name": "McpExecutionOwnerDirectoryDO",
+      },
     ],
   },
   "migrations": [
-    { "tag": "v1", "new_sqlite_classes": ["McpSessionDO"] },
-    { "tag": "v2", "new_sqlite_classes": ["McpExecutionOwnerDirectoryDO"] },
+    {
+      "tag": "v1",
+      "new_sqlite_classes": ["McpSessionDO"],
+    },
+    {
+      "tag": "v2",
+      "new_sqlite_classes": ["McpExecutionOwnerDirectoryDO"],
+    },
   ],
   // Cloudflare Access is the entire auth layer. ACCESS_TEAM_DOMAIN, ACCESS_AUD,
   // and ADMIN_EMAILS are installation-specific live vars, set after the first
@@ -71,15 +88,13 @@
   // secret-encryption key) is a SECRET, set it with
   // `wrangler secret put EXECUTOR_SECRET_KEY`, never in vars.
   "vars": {
-    "ACCESS_NAME_CLAIM": "name",
+    "ACCESS_AUD": "110b405c65f065edf4d8be848adcba2239b9c33a3236f680c4ffe53726cace04",
     "ACCESS_GROUPS_CLAIM": "groups",
-    // Never preserve a production dev-auth override through keep_vars.
+    "ACCESS_NAME_CLAIM": "name",
+    "ACCESS_TEAM_DOMAIN": "tight-sea-8b0b.cloudflareaccess.com",
+    "ADMIN_EMAILS": "amitavn@pm.me",
     "ENABLE_DEV_AUTH": "false",
     "SELF_HOSTED_ORG_ID": "default",
     "SELF_HOSTED_ORG_NAME": "Default",
-    // VITE_PUBLIC_SITE_URL is intentionally unset: with no static URL the worker
-    // derives the web base URL from each request's origin (RequestWebOrigin), so
-    // secret/OAuth handoff links match whatever host the user actually reached.
-    // Set it only to force a canonical URL (e.g. behind a proxy that rewrites Host).
   },
 }
